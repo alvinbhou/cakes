@@ -48,6 +48,13 @@
             will-change: transform;
             animation: hero-zoom 2.4s cubic-bezier(.2,.7,.2,1) both;
         }
+        /* phones / portrait tablets: portrait crop, couple sits upper-middle */
+        @media (max-width: 768px) {
+            .hero-bg {
+                background-image: url('img/banner-mobile.jpg');
+                background-position: 45% 40%;
+            }
+        }
         @keyframes hero-zoom {
             from { transform: scale(1.08); }
             to   { transform: scale(1); }
