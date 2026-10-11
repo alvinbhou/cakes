@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alvin & Janice - 喜餅</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💍</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,400&family=Great+Vibes&family=Inter:wght@300;400;500&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', 'PingFang TC', 'Noto Sans TC', sans-serif;
+            background-color: #f3f1ec;
+            color: #1A1A1A;
+            line-height: 1.75;
+            overflow-x: hidden;
+        }
+
+        a { color: inherit; }
+
+        /* ============================================
+           HERO — fixed full-screen photo; the content card slides up over it
+           ============================================ */
+        body { background-color: #2a2622; }
+        .hero {
+            position: fixed;
+            inset: 0;
+            height: 100vh;
+            height: 100lvh;              /* stays put when mobile toolbars collapse */
+            overflow: hidden;
+            z-index: 0;
+            background-color: #2a2622;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('img/banner.jpg');
+            background-size: cover;
+            /* couple stands low-center on the staircase — keep them in frame */
+            background-position: 49% 100%;
+            background-repeat: no-repeat;
+            will-change: transform;
+            animation: hero-zoom 2.4s cubic-bezier(.2,.7,.2,1) both;
+        }
+        @keyframes hero-zoom {
+            from { transform: scale(1.08); }
+            to   { transform: scale(1); }
+        }
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            /* darken the top where the names sit (the couple is in the lower half) */
+            background: linear-gradient(to bottom, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0) 42%);
+            pointer-events: none;
+        }
+        .hero-script-text {
+            position: absolute;
+            left: 50%;
+            top: max(7%, calc(env(safe-area-inset-top, 0px) + 4%));
+            transform: translateX(-50%);
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 2px 24px rgba(0,0,0,0.4);
+            z-index: 2;
+            width: 92%;
+            line-height: 1.2;
+            will-change: opacity, transform;
+            animation: hero-text-in 1.6s ease-out 0.3s both;
+        }
+        @keyframes hero-text-in {
+            from { opacity: 0; transform: translate(-50%, 16px); }
+            to   { opacity: 1; transform: translate(-50%, 0); }
+        }
+        .hero-title {
+            font-family: 'Noto Serif TC', serif;
+            font-weight: 700;
+            font-size: clamp(2.2rem, 7vw, 5.5rem);
+            line-height: 1.15;
+            letter-spacing: 0.12em;
+            word-break: keep-all;
+        }
+        .hero-names {
+            font-family: 'Noto Serif TC', serif;
+            font-weight: 500;
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            letter-spacing: 0.15em;
+            margin-top: 14px;
+            opacity: 0.95;
+        }
+
+        /* Fade-up as sections enter the viewport */
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+        }
+        .reveal-item.visible { opacity: 1; transform: translateY(0); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-item { opacity: 1; transform: none; transition: none; }
+            .hero-bg, .hero-script-text { animation: none; }
+        }
+
+        /* Content card: starts low so its title peeks on load, then scrolls up over the photo */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: min(720px, calc(100% - 24px));
+            /* couple stands near the bottom of the photo — start low so they stay visible */
+            margin: 80vh auto 12vh;
+            margin-top: 80svh;
+            padding: 30px clamp(20px, 6vw, 56px) 64px;
+            background-color: #f3f1ec;
+            border-radius: 24px;
+            box-shadow: 0 -12px 48px rgba(0,0,0,0.25);
+        }
+        /* small chevron above the card hinting that it scrolls up */
+        .scroll-hint {
+            position: absolute;
+            left: 50%;
+            bottom: 100%;
+            margin-bottom: 10px;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 1.1rem;
+            line-height: 1;
+            text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+            opacity: 0.85;
+            pointer-events: none;
+            animation: scroll-hint-bob 1.8s ease-in-out infinite;
+        }
+        @keyframes scroll-hint-bob {
+            0%, 100% { transform: translate(-50%, 0); }
+            50%      { transform: translate(-50%, -6px); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .scroll-hint { animation: none; }
+        }
+        @media (max-width: 600px) {
+            .container { margin-bottom: 6vh; border-radius: 20px; }
+        }
+
+        .script {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.6rem;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-family: 'Noto Serif TC', serif;
+            font-weight: 700;
+            font-size: 1.7rem;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 0 0 36px;
+            word-break: keep-all;    /* wrap after ！, not mid-phrase */
+        }
+
+        .intro {
+            font-size: 1rem;
+            line-height: 1.9;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .intro p + p { margin-top: 20px; }
+        .intro .greeting {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-family: 'Noto Serif TC', serif;
+            font-weight: 500;
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+        }
+        .intro .greeting img {
+            width: 170px;
+            height: auto;
+            /* GIF has a white background — multiply drops it onto the card colour */
+            mix-blend-mode: multiply;
+            margin: -10px 0;          /* the art has generous whitespace; tighten it */
+        }
+        /* each line is a phrase; keep it whole unless the screen is too narrow */
+        .intro .line { display: inline-block; }
+
+        .example { margin: 8px auto 32px; max-width: 240px; text-align: center; }
+        .example img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+        .example figcaption {
+            font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
+            font-style: italic;
+            font-size: 0.95rem;
+            opacity: 0.7;
+            margin-top: 12px;
+        }
+
+        .notice {
+            border-left: 3px solid #1A1A1A;
+            background: rgba(26, 26, 26, 0.04);
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            margin-bottom: 44px;
+        }
+        .notice strong { font-weight: 500; }
+
+        .divider {
+            width: 60px;
+            height: 1px;
+            background: #1A1A1A;
+            opacity: 0.4;
+            margin: 0 auto 40px;
+        }
+
+        .field { margin-bottom: 30px; }
+
+        .field > label,
+        .field > .label {
+            display: block;
+            font-family: 'Noto Serif TC', serif;
+            font-weight: 500;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .req { color: #b04a3a; margin-left: 2px; }
+        .hint { display: block; font-family: 'Inter', sans-serif; font-size: 0.82rem; opacity: 0.6; font-weight: 400; margin-top: 2px; }
+
+        input[type="text"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            font: inherit;
+            font-size: 1rem;
+            color: inherit;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.35);
+            padding: 8px 2px;
+            border-radius: 0;
+            transition: border-color 0.2s ease;
+        }
+        textarea {
+            border: 1px solid rgba(26, 26, 26, 0.25);
+            padding: 12px;
+            resize: vertical;
+            min-height: 110px;
+        }
+        input:focus, textarea:focus { outline: none; border-color: #1A1A1A; }
+        input::placeholder, textarea::placeholder { color: rgba(26, 26, 26, 0.4); }
+
+        .radio-group { display: flex; flex-direction: column; gap: 10px; }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 0.98rem;
+        }
+        .radio-option input { accent-color: #1A1A1A; width: 18px; height: 18px; flex-shrink: 0; }
+
+        #addressField { transition: opacity 0.2s ease; }
+        #addressField.is-disabled { opacity: 0.4; }
+
+        button[type="submit"] {
+            display: block;
+            width: 100%;
+            margin-top: 12px;
+            background: #1A1A1A;
+            color: #f3f1ec;
+            border: none;
+            padding: 16px;
+            border-radius: 999px;
+            font: inherit;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+        button[type="submit"]:hover { opacity: 0.85; }
+        button[type="submit"]:disabled { opacity: 0.5; cursor: default; }
+
+        #success-message { display: none; text-align: center; padding: 40px 0; }
+        #success-message .script { margin-bottom: 12px; }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4rem; }
+            .script { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+<header class="hero" role="img" aria-label="Alvin 與 Janice 在舊金山市政廳的合照">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-script-text" id="heroScriptText">
+        <div class="hero-title">喜餅寄送意願調查</div>
+        <div class="hero-names">Alvin 侯舜元 / Janice 石羽君</div>
+    </div>
+</header>
+
+<main class="container">
+    <div class="scroll-hint" id="scrollHint" aria-hidden="true">︿</div>
+    <!-- <h1 class="reveal-item">我們結婚了！喜餅寄送意願調查 💍</h1> -->
+
+    <div class="intro reveal-item">
+        <p class="greeting"><img src="img/hello.gif" alt="" width="1200" height="789"></p>
+        <p>
+            <span class="line">我們已經在 7/15</span> <span class="line">於舊金山市政廳完成領證儀式了！</span><br>
+            <span class="line">非常謝謝大家一路以來的祝福 ❤️</span>
+        </p>
+        <p>
+            <span class="line">為了和大家分享這份喜悅，</span><span class="line">我們準備了喜餅想送給各位。</span><br>
+            <span class="line">這次挑選的是</span><span class="line">「<a href="https://www.enpatisserie.com/" target="_blank" rel="noopener">肥德蓮 的八入禮盒</a>」</span>
+        </p>
+    </div>
+
+    <figure class="example reveal-item">
+        <img src="img/xibing-example.png" alt="肥德蓮 八入禮盒：綠色燙金禮盒，內含八顆瑪德蓮" width="1080" height="1080" loading="lazy">
+        <figcaption>肥德蓮 八入禮盒</figcaption>
+    </figure>
+
+    <div class="notice reveal-item">
+        ⚠️ <strong>重要提醒：</strong>喜餅預計會在 <strong>12月中左右</strong> 寄出。如果當時您不在台灣的話，可能就沒有辦法拿到喜餅了，填寫前請務必留意時間喔！
+    </div>
+
+    <div class="divider"></div>
+
+    <form id="xibingForm" class="reveal-item" novalidate>
+        <div class="field">
+            <label for="name">收件人姓名<span class="req">*</span></label>
+            <input type="text" id="name" name="name" autocomplete="name" required>
+        </div>
+
+        <div class="field">
+            <label for="phone">聯絡電話<span class="req">*</span></label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="例：0912-345-678" required>
+        </div>
+
+        <div class="field">
+            <label for="relationship">與新人的關係<span class="req">*</span></label>
+            <input type="text" id="relationship" name="relationship" placeholder="例：Alvin 大學同學、Janice 高中同學" required>
+        </div>
+
+        <div class="field">
+            <span class="label">請問需不需要直接將喜餅寄到家裡？<span class="req">*</span></span>
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="delivery" value="需要直接寄到家裡" required>
+                    需要直接寄到家裡
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="delivery" value="不需要，我會再跟你們約時間面交/拿取">
+                    不需要，我會再跟你們約時間面交/拿取
+                </label>
+            </div>
+        </div>
+
+        <div class="field is-disabled" id="addressField">
+            <label for="address">喜餅寄送地址（⚠️ 限台灣）<span class="req" id="addressReq" hidden>*</span>
+                <span class="hint">若上一題選擇「需要直接寄到家裡」，請提供含郵遞區號的完整收件地址</span>
+            </label>
+            <input type="text" id="address" name="address" autocomplete="street-address" placeholder="例：106 台北市大安區…">
+        </div>
+
+        <div class="field">
+            <label for="blessing">對新人的祝福<span class="hint">選填</span></label>
+            <textarea id="blessing" name="blessing" placeholder="想對我們說點什麼嗎？"></textarea>
+        </div>
+
+        <button type="submit" id="submitBtn">送出</button>
+    </form>
+
+    <div id="success-message">
+        <div class="script">Thank you!</div>
+        <p>收到你的回覆了，喜餅寄出前我們會再跟你聯絡 🥰</p>
+    </div>
+</main>
+
+<script>
+    /* ============================================
+       Hero: names fade out as the card slides up over the photo
+       ============================================ */
+    const hero       = document.querySelector('.hero');
+    const heroScript = document.getElementById('heroScriptText');
+    const scrollHint = document.getElementById('scrollHint');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let ticking = false;
+
+    function update() {
+        const p = Math.min(1, window.scrollY / (hero.offsetHeight * 0.5));
+        heroScript.style.opacity = String(1 - p);
+        scrollHint.style.opacity = String(0.85 * (1 - Math.min(1, p * 4)));
+        ticking = false;
+    }
+
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+            ticking = true;
+        }
+    }
+
+    if (!reduceMotion) {
+        // Let the names' load-in fade finish before scroll takes over their opacity
+        heroScript.addEventListener('animationend', () => {
+            heroScript.style.animation = 'none';
+            update();
+            window.addEventListener('scroll', onScroll, { passive: true });
+        }, { once: true });
+    }
+
+    /* ============================================
+       Fade-up reveal via IntersectionObserver
+       ============================================ */
+    const revealObserver = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            } else if (entry.boundingClientRect.top > 0) {
+                // scrolled back above it — reset so it animates again
+                entry.target.classList.remove('visible');
+            }
+        }
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal-item').forEach(el => revealObserver.observe(el));
+
+    // Paste the Apps Script web app /exec URL here (see apps-script.gs).
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynq4RRfmqzfgiz-7PiCNuTlrn2ltz-liJhWl7yEVokWuyknx4aaonJubCKm1xHXRaE/exec';
+
+    const form         = document.getElementById('xibingForm');
+    const submitBtn    = document.getElementById('submitBtn');
+    const addressField = document.getElementById('addressField');
+    const addressInput = document.getElementById('address');
+    const addressReq   = document.getElementById('addressReq');
+
+    const needsShipping = () =>
+        document.querySelector('input[name="delivery"]:checked')?.value === '需要直接寄到家裡';
+
+    form.querySelectorAll('input[name="delivery"]').forEach(r => r.addEventListener('change', () => {
+        const ship = needsShipping();
+        addressInput.required = ship;
+        addressReq.hidden = !ship;
+        addressField.classList.toggle('is-disabled', !ship);
+    }));
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        if (!form.reportValidity()) return;
+
+        submitBtn.disabled  = true;
+        submitBtn.innerText = '送出中…';
+
+        const val = id => document.getElementById(id).value.trim();
+        const delivery = document.querySelector('input[name="delivery"]:checked').value;
+
+        // Keys must match HEADERS in apps-script.gs
+        const data = new FormData();
+        data.append('收件人姓名',   val('name'));
+        data.append('聯絡電話',     val('phone'));
+        data.append('與新人的關係', val('relationship'));
+        data.append('寄送方式',     delivery);
+        data.append('寄送地址',     needsShipping() ? val('address') : '');
+        data.append('對新人的祝福', val('blessing'));
+
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: data })
+            .then(() => {
+                form.style.display = 'none';
+                const successEl = document.getElementById('success-message');
+                successEl.style.display = 'block';
+                successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            })
+            .catch(err => {
+                console.error('Error!', err.message);
+                submitBtn.disabled  = false;
+                submitBtn.innerText = '發生錯誤，請再試一次';
+                alert('送出時發生問題，請再試一次。');
+            });
+    });
+</script>
+</body>
+</html>
